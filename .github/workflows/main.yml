@@ -12,10 +12,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Passo 01
-      run: echo "Construir imagem da aplicação"
-    - name: Passo 02
-      run: echo "Publicar a imagem no Docker Hub"
+    - name: Docker Login
+      uses: docker/login-action@v2.1.0
+      with:
+        username: fabricioveronez
+        password: ${{secrets.DOCKERHUB_PWD}}    
+
+    - name: Construção da imagem Docker worker
+      uses: docker/build-push-action@v3.2.0
+      with: 
+        context: ./home-broker/01-worker
+        file: ./home-broker/01-worker/Dockerfile
+        push: true
+        tags: |
+          fabricioveronez/trader-worker:${{github.run_number}}
+          fabricioveronez/trader-worker:latest        
+
+    - name: Construção da imagem Docker api backend 
+      uses: docker/build-push-action@v3.2.0
+      with: 
+        context: ./home-broker/02-api
+        file: ./home-broker/02-api/Dockerfile
+        push: true
+        tags: |
+          fabricioveronez/trader-api:${{github.run_number}}
+          fabricioveronez/trader-api:latest
+
+    - name: Construção da imagem Docker Front end
+      uses: docker/build-push-action@v3.2.0
+      with: 
+        context: ./home-broker/03-frontend
+        file: ./home-broker/03-frontend/Dockerfile
+        push: true
+        tags: |
+          fabricioveronez/trader-web:${{github.run_number}}
+          fabricioveronez/trader-web:latest
+        build-args: |
+          NEXT_PUBLIC_NEST_URL=aebab97f323754cab8bb618459f62b1c-1714411121.us-east-1.elb.amazonaws.com
+          NEXT_PUBLIC_NEST_URL_API=a818457aa08fa4259960f5ec675c0572-1367107727.us-east-1.elb.amazonaws.com
 
   CD:
     runs-on: ubuntu-latest
@@ -23,5 +57,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Passo 01
-      run: echo "Deploy da aplicação"
+    - name: Configurar as credenciais da AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Update KubeConfig
+      shell: bash
+      run: |
+        aws eks update-kubeconfig --name imersao-eks --region us-east-1
+    - name: Deploy to Kubernetes cluster
+      uses: Azure/k8s-deploy@v4.9
+      with:
+        manifests: |
+          home-broker/04-k8s-deploy/02-worker/deployment.yaml
+          home-broker/04-k8s-deploy/03-api/deployment.yaml
+          home-broker/04-k8s-deploy/04-frontend/deployment.yaml
+        images: |
+          fabricioveronez/trader-worker:${{github.run_number}}
+          fabricioveronez/trader-api:${{github.run_number}}
+          fabricioveronez/trader-web:${{github.run_number}}
