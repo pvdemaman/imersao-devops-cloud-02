@@ -67,15 +67,18 @@ jobs:
       shell: bash
       run: |
         aws eks update-kubeconfig --name imersao-eks --region us-east-1
-        export KUBECONFIG=~/.kube/config
-    - name: Deploy to Kubernetes cluster
-      uses: Azure/k8s-deploy@v4.9
-      with:
-        manifests: |
-          home-broker/04-k8s-deploy/02-worker/deployment.yaml
-          home-broker/04-k8s-deploy/03-api/deployment.yaml
-          home-broker/04-k8s-deploy/04-frontend/deployment.yaml
-        images: |
-          fabricioveronez/trader-worker:${{github.run_number}}
-          fabricioveronez/trader-api:${{github.run_number}}
-          fabricioveronez/trader-web:${{github.run_number}}
+
+    - name: Troca das tag 
+      shell: bash
+      run: |
+        sed -i "s/{{IMAGE_TAG}}/${{github.run_number}}/g" ./home-broker/04-k8s-deploy/02-worker/deployment.yaml
+        sed -i "s/{{IMAGE_TAG}}/${{github.run_number}}/g" ./home-broker/04-k8s-deploy/03-api/deployment.yaml
+        sed -i "s/{{IMAGE_TAG}}/${{github.run_number}}/g" ./home-broker/04-k8s-deploy/04-frontend/deployment.yaml
+
+    - name: Troca das tag 
+      shell: bash
+      run: |
+        kubectl apply -f ./home-broker/04-k8s-deploy/02-worker/deployment.yaml
+        kubectl apply -f ./home-broker/04-k8s-deploy/03-api/deployment.yaml
+        kubectl apply -f ./home-broker/04-k8s-deploy/04-frontend/deployment.yaml
+
