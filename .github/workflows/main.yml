@@ -67,6 +67,7 @@ jobs:
       shell: bash
       run: |
         aws eks update-kubeconfig --name imersao-eks --region us-east-1
+        export KUBECONFIG=~/.kube/config
     - name: Deploy to Kubernetes cluster
       uses: Azure/k8s-deploy@v4.9
       with:
