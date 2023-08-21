@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
         - name: trader-api
-          image: fabricioveronez/trader-api:{{IMAGE_TAG}}
+          image: fabricioveronez/trader-api:v1
           ports:
           - containerPort: 3000
           env:
