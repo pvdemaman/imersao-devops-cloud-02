@@ -27,8 +27,8 @@ jobs:
         file: ./home-broker/01-worker/Dockerfile
         push: true
         tags: |
-          fabricioveronez/trader-worker:${{github.run_number}}
-          fabricioveronez/trader-worker:latest        
+          pvdemaman/trader-worker:${{github.run_number}}
+          pvdemaman/trader-worker:latest        
 
     - name: Construção da imagem Docker api backend 
       uses: docker/build-push-action@v3.2.0
@@ -37,8 +37,8 @@ jobs:
         file: ./home-broker/02-api/Dockerfile
         push: true
         tags: |
-          fabricioveronez/trader-api:${{github.run_number}}
-          fabricioveronez/trader-api:latest
+          pvdemaman/trader-api:${{github.run_number}}
+          pvdemaman/trader-api:latest
 
     - name: Construção da imagem Docker Front end
       uses: docker/build-push-action@v3.2.0
@@ -47,8 +47,8 @@ jobs:
         file: ./home-broker/03-frontend/Dockerfile
         push: true
         tags: |
-          fabricioveronez/trader-web:${{github.run_number}}
-          fabricioveronez/trader-web:latest
+          pvdemaman/trader-web:${{github.run_number}}
+          pvdemaman/trader-web:latest
         build-args: |
           NEXT_PUBLIC_NEST_URL=aebab97f323754cab8bb618459f62b1c-1714411121.us-east-1.elb.amazonaws.com
           NEXT_PUBLIC_NEST_URL_API=a818457aa08fa4259960f5ec675c0572-1367107727.us-east-1.elb.amazonaws.com
@@ -86,6 +86,6 @@ jobs:
           home-broker/04-k8s-deploy/03-api/deployment.yaml
           home-broker/04-k8s-deploy/04-frontend/deployment.yaml
         images: |
-          fabricioveronez/trader-worker:${{github.run_number}}
-          fabricioveronez/trader-api:${{github.run_number}}
-          fabricioveronez/trader-web:${{github.run_number}}
+          pvdemaman/trader-worker:${{github.run_number}}
+          pvdemaman/trader-api:${{github.run_number}}
+          pvdemaman/trader-web:${{github.run_number}}
