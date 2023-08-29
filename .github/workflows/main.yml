@@ -50,8 +50,8 @@ jobs:
           pvdemaman/trader-web:${{github.run_number}}
           pvdemaman/trader-web:latest
         build-args: |
-          NEXT_PUBLIC_NEST_URL=aebab97f323754cab8bb618459f62b1c-1714411121.us-east-1.elb.amazonaws.com
-          NEXT_PUBLIC_NEST_URL_API=a818457aa08fa4259960f5ec675c0572-1367107727.us-east-1.elb.amazonaws.com
+          next_url=aebab97f323754cab8bb618459f62b1c-1714411121.us-east-1.elb.amazonaws.com
+          next_url_API=a818457aa08fa4259960f5ec675c0572-1367107727.us-east-1.elb.amazonaws.com
 
   CD:
     runs-on: ubuntu-latest
